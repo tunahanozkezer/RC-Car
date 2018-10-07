@@ -1,0 +1,33 @@
+//Created By Yasin Tunahan ÖZKEZER
+#include <Servo.h>
+Servo myservo;
+
+//OUTPUTS                                 //INPUTS
+const int motor_a=2 ,motor_b=7, pwm=6; /**/ const int kanal_pin=A0;
+//Parameters
+const int kanal_sayisi=13; /**/ int kanal[kanal_sayisi]; /**/ int conv_hiz,conv_yon,hiz,yon,gaz,baslama=0;;
+
+void hiz_yaz(int yazilan_hiz){analogWrite(pwm,yazilan_hiz);}
+
+void geri()  { digitalWrite(motor_a,HIGH); digitalWrite(motor_b,LOW);            }
+void ileri() { digitalWrite(motor_a,LOW);  digitalWrite(motor_b,HIGH);           }
+void dur()   { digitalWrite(motor_a,LOW);  digitalWrite(motor_b,LOW); hiz_yaz(0);}
+
+void yon_degistir(){if(kanal[11]>=1090){ yon=map(kanal[12],1090,1570,90,50); if(kanal[12]>1500){yon=50;}   myservo.write(yon);}
+                    else               { yon=map(kanal[12],550,1090,130,90); if(kanal[12]<580) {yon=130;}  myservo.write(yon);}}
+
+void kumanda_oku(){
+  if(pulseIn(kanal_pin , HIGH) > 2000){
+  for(int i = 1; i <= kanal_sayisi; i++)
+   {kanal[i-1]=pulseIn(kanal_pin, HIGH);}}}
+   
+void setup() {
+  pinMode(motor_a, OUTPUT); pinMode(motor_b, OUTPUT); pinMode(pwm, OUTPUT); pinMode(kanal_pin, INPUT); myservo.attach(9);
+  kumanda_oku(); while(kanal[10]<500){kumanda_oku(); dur();}}
+
+void loop() {
+  kumanda_oku();
+  if(kanal[10]>=1080){ hiz=map(kanal[10],1080,1500,0,255); while(kanal[10]>1070 && kanal[10]<1100){dur(); kumanda_oku(); yon_degistir();} if(kanal[10]>1500){hiz=255;} ileri(); hiz_yaz(hiz);}
+  else               { hiz=map(kanal[10],1080,580,0,255);  while(kanal[10]>1000 && kanal[10]<1070){dur(); kumanda_oku(); yon_degistir();} if(kanal[10]<580) {hiz=255;} geri();  hiz_yaz(hiz);}
+  yon_degistir();
+}
