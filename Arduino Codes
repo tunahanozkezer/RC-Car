@@ -1,4 +1,6 @@
 //Created By Yasin Tunahan ÖZKEZER
+//In this code my RC Transmitter works with PPM Protocol. If your RC Transmitter work with PWM or another protocol you need to modify
+//"kumanda_oku()" function.
 #include <Servo.h>
 Servo myservo;
 
